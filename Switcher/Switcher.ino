@@ -6,10 +6,7 @@
 #include <midi_Namespace.h>
 #include <midi_Settings.h>
 
-// Create a software serial port to allow debugging over USB
-//SoftwareSerial midiSerial(2, 3); // RX, TX
-// Create instance of MIDI library, using software serial
-//MIDI_CREATE_INSTANCE(SoftwareSerial, midiSerial, midiLooper);
+// Create instance of MIDI library, using hardware serial
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, midiLooper);
 
 // Onboard LED
@@ -30,6 +27,7 @@ struct configuration {
 };
 typedef struct configuration Configuration;
 Configuration config;
+// Output sequence (fed to shift register)
 byte currentOutput;
 
 // Handlers
@@ -50,6 +48,7 @@ void handleControlChange(byte channel, byte number, byte value) {
         // Sets a single bit to 0
         currentOutput = currentOutput & (~mask);
       }
+      // Updates output
       updateOutput();
     }
   }
@@ -63,15 +62,11 @@ void handleControlChange(byte channel, byte number, byte value) {
     EEPROM.put(eeAddress, config);
     digitalWrite(ledPin, LOW);
   }
-  //Serial.print("output: ");
-  //Serial.println(currentOutput, BIN);
 }
 // Program Change: loads a specific output sequence
 void handleProgramChange(byte channel, byte number) {
   currentOutput = config.output[number];
   updateOutput();
-  //Serial.print("output: ");
-  //Serial.println(currentOutput, BIN);
 }
 
 // Main

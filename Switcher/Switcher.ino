@@ -1,4 +1,3 @@
-#include <SoftwareSerial.h>
 #include <EEPROM.h>
 #include <MIDI.h>
 #include <midi_Defs.h>
